@@ -19,11 +19,16 @@ import {
 } from '@loopback/rest';
 import {Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
+import {service} from '@loopback/core';
+import {AuthService} from '../services';
+import axios from 'axios';
 
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
     public usuarioRepository : UsuarioRepository,
+    @service(AuthService)
+    public servicioAuth: AuthService
   ) {}
 
   @post('/usuarios')
@@ -44,7 +49,35 @@ export class UsuarioController {
     })
     usuario: Omit<Usuario, 'id'>,
   ): Promise<Usuario> {
-    return this.usuarioRepository.create(usuario);
+    //return this.usuarioRepository.create(usuario);
+     //Nuevo
+    let clave = this.servicioAuth.GenerarClave();
+    let claveCifrada = this.servicioAuth.CifrarClave(clave);
+    usuario.password = claveCifrada;
+    let p = await this.usuarioRepository.create(usuario);
+    // Notificamos al usuario por correo
+    let destino = usuario.correo;
+    let asunto = 'Registro de usuario en plataforma';
+    let contenido = `Hola, ${usuario.nombre} ${usuario.apellidos} su contraseña en el portal es: ${clave}`
+    axios({
+      method: 'post',
+      url: 'http://localhost:5000/send_email',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      data: {
+        destino: destino,
+        asunto: asunto,
+        contenido: contenido
+      }
+    }).then((data: any) => {
+      console.log(data)
+    }).catch((err: any) => {
+      console.log(err)
+    })
+
+   return p;
   }
 
   @get('/usuarios/count')
