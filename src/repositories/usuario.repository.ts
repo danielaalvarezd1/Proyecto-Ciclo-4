@@ -8,6 +8,7 @@ export class UsuarioRepository extends DefaultCrudRepository<
   typeof Usuario.prototype.id,
   UsuarioRelations
 > {
+  [x: string]: any;
   constructor(
     @inject('datasources.mongo') dataSource: MongoDataSource,
   ) {
