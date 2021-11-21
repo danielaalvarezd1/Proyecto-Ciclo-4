@@ -24,7 +24,10 @@ import {AuthService} from '../services';
 import axios from 'axios';
 import {Credenciales} from '../models';
 import { HttpErrors} from '@loopback/rest';
+import {authenticate} from '@loopback/authentication';
 
+
+@authenticate("admin")
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
@@ -183,6 +186,7 @@ export class UsuarioController {
     await this.usuarioRepository.deleteById(id);
   }
   //Servicio de login
+  @authenticate.skip()
   @post('/login', {
     responses: {
       '200': {

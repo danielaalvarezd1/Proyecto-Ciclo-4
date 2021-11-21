@@ -19,7 +19,9 @@ import {
 } from '@loopback/rest';
 import {Estacion} from '../models';
 import {EstacionRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
 
+@authenticate("admin")
 export class EstacionController {
   constructor(
     @repository(EstacionRepository)

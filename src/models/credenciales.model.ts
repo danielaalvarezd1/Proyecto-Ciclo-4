@@ -4,13 +4,15 @@ import {Model, model, property} from '@loopback/repository';
 export class Credenciales extends Model {
   @property({
     type: 'string',
+    required: true,
   })
-  usuario?: string;
+  usuario: string;
 
   @property({
     type: 'string',
+    required: true,
   })
-  password?: string;
+  password: string;
 
 
   constructor(data?: Partial<Credenciales>) {
